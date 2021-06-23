@@ -1,6 +1,8 @@
 #include "syshead.h"
 #include "utils.h"
 #include "ipv4.h"
+#include "icmp.h"
+#include <string.h>
 
 static int tun_fd;
 
@@ -45,13 +47,28 @@ int main()
         if(retval > 0){
             char buf[4000];
             read(tun_fd, buf, 4000);
+
             struct ip_hdr *hdr = (struct ip_hdr *) buf;
 
-            // parse ipv4 header from network to host byte order
-            ip_ntohl(hdr);
+            struct icmp* icmp = (struct icmp *) hdr->data;
 
-            print_ip_packet(hdr);   
-            printf("\n");
+            if(icmp->type == ICMP_V4_ECHO){
+                printf("ICMP\n");
+                icmp->type = ICMP_REPLY;
+                icmp->csum = 0;
+                icmp->csum = checksum(icmp, icmp_len, 0);
+
+                uint32_t temp = hdr->daddr;
+
+                hdr->daddr = hdr->saddr;
+                hdr->saddr = temp;
+
+                
+            }
+
+            return 1;
+
+
         }
     }
 
