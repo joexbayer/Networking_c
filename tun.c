@@ -46,6 +46,10 @@ int main()
             char buf[4000];
             read(tun_fd, buf, 4000);
             struct ip_hdr *hdr = (struct ip_hdr *) buf;
+
+            // parse ipv4 header from network to host byte order
+            ip_ntohl(hdr);
+
             print_ip_packet(hdr);   
             printf("\n");
         }

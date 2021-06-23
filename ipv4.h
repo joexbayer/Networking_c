@@ -19,7 +19,13 @@ struct ip_hdr {
     uint8_t data[];
 } __attribute__((packed));
 
+#define IPV4 0x04
+#define ICMPV4 0x01
+
 void print_ip(unsigned int ip);
 void print_ip_packet(struct ip_hdr* hdr);
+
+void ip_ntohl(struct ip_hdr *hdr);
+uint16_t checksum(void *addr, int count, int start_sum);
 
 #endif

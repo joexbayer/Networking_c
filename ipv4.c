@@ -19,9 +19,17 @@ void print_ip_packet(struct ip_hdr* hdr){
 void print_ip(unsigned int ip)
 {
     unsigned char bytes[4];
-    bytes[0] = ip & 0xFF;
-    bytes[1] = (ip >> 8) & 0xFF;
-    bytes[2] = (ip >> 16) & 0xFF;
-    bytes[3] = (ip >> 24) & 0xFF;   
+    bytes[0] = (ip >> 24) & 0xFF;
+    bytes[1] = (ip >> 16) & 0xFF;
+    bytes[2] = (ip >> 8) & 0xFF;
+    bytes[3] = ip & 0xFF;   
     printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]);        
+}
+
+void ip_ntohl(struct ip_hdr *hdr)
+{
+    hdr->saddr = ntohl(hdr->saddr);
+    hdr->daddr = ntohl(hdr->daddr);
+    hdr->len = ntohs(hdr->len);
+    hdr->id = ntohs(hdr->id);
 }
