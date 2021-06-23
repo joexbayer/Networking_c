@@ -1,5 +1,6 @@
 #include "syshead.h"
 #include "utils.h"
+#include "ipv4.h"
 
 static int tun_fd;
 
@@ -20,7 +21,7 @@ static int tun_alloc()
         exit(1);
     }
 
-    system("ifconfig tun12 inet 10.0.0.1 10.0.0.2 up");
+    system("ifconfig tun12 inet 192.168.1.4 10.0.0.2 up");
 
     return fd;
 }
