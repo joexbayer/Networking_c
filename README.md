@@ -5,3 +5,4 @@
 Currently working:
 
 Accepting and parsing IPv4 packets.
+Caculate IPv4 header checksum based on rfc1071.
