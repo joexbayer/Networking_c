@@ -4,5 +4,6 @@
 
 Currently working:
 
-Accepting and parsing IPv4 packets.
-Caculate IPv4 header checksum based on rfc1071.
+<p>Accepting and parsing IPv4 packets.</p>
+<p>Caculate IPv4 header checksum based on rfc1071.</p>
+<p>ICMP with ping!</p>
