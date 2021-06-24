@@ -53,6 +53,9 @@ char* ip_handle(struct ip_hdr* hdr, char* buf){
     
     // pass data to icmp, icmp_parse returns own packet data
     char* icmp_data = icmp_parse(ip_data, icmp_len);
+    if(icmp_data == NULL){
+        return NULL;
+    }
 
     //do better!!
     struct ip_hdr* ip_reponse = ip_send(hdr);

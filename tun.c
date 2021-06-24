@@ -50,8 +50,8 @@ char* tun_read(){
     return NULL;
 }
 
-char* tun_write(char* buf, int length){
-    write(tun_fd, buf, length);
+int tun_write(char* buf, int length){
+    return write(tun_fd, buf, length);
 }
 
 void free_tun()
@@ -66,16 +66,26 @@ int main()
     while(1){
 
         char* buf = tun_read();
+        if (buf == NULL){
+            printf("Error reading packet. Dropped.\n");
+            continue;
+        }
 
         char* reponse = ip_parse(buf);
+        if(reponse == NULL){
+            printf("Error reading packet. Dropped.\n");
+            continue;
+        }
 
         // bad -> 
         struct ip_hdr* hdr = (struct ip_hdr * ) buf;
         ip_ntohl(hdr);
         // <- fix with sk_buff
 
-        tun_write(reponse, hdr->len + (hdr->ihl * 4));
-
+        int wc = tun_write(reponse, hdr->len + (hdr->ihl * 4));
+        if(wc == 0){
+            printf("Error sending packet.\n");
+        }
         free(reponse);
     }
 
