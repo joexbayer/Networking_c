@@ -2,6 +2,7 @@
 #define IPV4_H
 
 #include "syshead.h"
+#include "icmp.h"
 
 // IPv4 header
 struct ip_hdr {
@@ -16,7 +17,6 @@ struct ip_hdr {
     uint16_t csum;
     uint32_t saddr;
     uint32_t daddr;
-    uint8_t data[];
 } __attribute__((packed));
 
 #define IPV4 0x04
@@ -25,7 +25,13 @@ struct ip_hdr {
 void print_ip(unsigned int ip);
 void print_ip_packet(struct ip_hdr* hdr);
 
+char* ip_parse(char* buf);
+
 void ip_ntohl(struct ip_hdr *hdr);
 uint16_t checksum(void *addr, int count, int start_sum);
+
+struct ip_hdr* ip_send(struct ip_hdr* ihdr_in);
+
+char* ip_get_data(char* sk_buf, struct ip_hdr* ihdr);
 
 #endif
