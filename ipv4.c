@@ -45,7 +45,7 @@ uint16_t checksum(void *addr, int count, int start_sum){
 
     while( count > 1 )  {
        /*  This is the inner loop */
-           sum += * (unsigned short) addr++;
+           sum += * (unsigned short*) addr++;
            count -= 2;
    }
 
