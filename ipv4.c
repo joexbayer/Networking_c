@@ -44,6 +44,55 @@ char* ip_get_data(char* sk_buf, struct ip_hdr* ihdr){
 
 }
 
+char* ip_handle(struct ip_hdr* hdr, char* buf){
+
+    char* ip_data = ip_get_data(buf, hdr);
+
+    // define icmp_len
+    short icmp_len = hdr->len - (hdr->ihl * 4);
+    
+    // pass data to icmp, icmp_parse returns own packet data
+    char* icmp_data = icmp_parse(ip_data, icmp_len);
+
+    //do better!!
+    struct ip_hdr* ip_reponse = ip_send(hdr);
+
+    // ip header length
+    int ip_header_length = hdr->ihl * 4;
+
+    // create reponse
+    char* reponse = malloc(hdr->len + ip_header_length);
+    memcpy(reponse, ip_reponse, ip_header_length);
+    memcpy(reponse+ip_header_length, icmp_data, hdr->len);
+
+    free(ip_reponse);
+
+    return reponse;
+}
+
+
+
+char* ip_parse(char* buf){
+
+
+    struct ip_hdr* hdr = (struct ip_hdr* ) buf;
+
+    // calculate checksum, should be 0.
+    uint16_t csum = checksum(hdr, hdr->ihl * 4, 0);
+    if( 0 != csum){
+        printf("Checksum failed (IPv4), returning NULL\n");
+        return NULL;
+    }
+
+    // convert ip from network byte order to host byter order.
+    ip_ntohl(hdr);
+
+    printf("-------- Incomming -------\n");
+    print_ip_packet(hdr);
+
+    return ip_handle(hdr, buf);
+}
+
 struct ip_hdr* ip_send(struct ip_hdr* ihdr_in){
       struct ip_hdr* ihdr = malloc(sizeof(struct ip_hdr));
 
@@ -66,7 +115,7 @@ struct ip_hdr* ip_send(struct ip_hdr* ihdr_in){
       ihdr->saddr = htonl(ihdr->saddr);
       ihdr->csum = htons(ihdr->csum);
       ihdr->frag_offset = htons(ihdr->frag_offset);
-      
+
       ihdr->csum = checksum(ihdr, ihdr->ihl * 4, 0);
 
       return ihdr;

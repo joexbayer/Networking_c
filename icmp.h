@@ -24,5 +24,7 @@ void icmp_write(struct icmp* icmp, short length);
 
 char* icmp_get_data(char* buf, int total_size);
 
+char* icmp_parse(char* buf, short length);
+
 
 #endif

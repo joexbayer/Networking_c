@@ -17,7 +17,6 @@ struct ip_hdr {
     uint16_t csum;
     uint32_t saddr;
     uint32_t daddr;
-    uint8_t data[];
 } __attribute__((packed));
 
 #define IPV4 0x04
@@ -25,6 +24,8 @@ struct ip_hdr {
 
 void print_ip(unsigned int ip);
 void print_ip_packet(struct ip_hdr* hdr);
+
+char* ip_parse(char* buf);
 
 void ip_ntohl(struct ip_hdr *hdr);
 uint16_t checksum(void *addr, int count, int start_sum);
