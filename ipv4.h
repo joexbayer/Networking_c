@@ -29,6 +29,8 @@ void print_ip_packet(struct ip_hdr* hdr);
 void ip_ntohl(struct ip_hdr *hdr);
 uint16_t checksum(void *addr, int count, int start_sum);
 
-struct ip_hdr* ip_send(struct ip_hdr* ihdr_in, struct icmp* icmp);
+struct ip_hdr* ip_send(struct ip_hdr* ihdr_in);
+
+char* ip_get_data(char* sk_buf, struct ip_hdr* ihdr);
 
 #endif

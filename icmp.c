@@ -2,32 +2,28 @@
 #include "icmp.h"
 #include "utils.h"
 
-struct icmp* icmp_read(struct ip_hdr* iphdr) 
-{
-    struct icmp* icmp = (struct icmp *) iphdr->data;
+char* icmp_get_data(char* buf, int total_size){
 
-    if(icmp->type == ICMP_V4_ECHO){
-        printf("ICMP\n");
-        return icmp_write(iphdr);
-    }
-    return NULL;
+
+    char* data = malloc(total_size-sizeof(struct icmp));
+
+    memcpy(data, buf+sizeof(struct icmp), total_size-sizeof(struct icmp));
+
+    return data;
 }
 
-struct icmp* icmp_write(struct ip_hdr* iphdr)
+void icmp_write(struct icmp* icmp, short length)
 {
-    struct icmp *icmp = malloc(sizeof(struct icmp));
-    
-    uint16_t icmp_len = iphdr->len - (iphdr->ihl * 4);
-    
-    icmp = (struct icmp *)iphdr->data;
 
-    printf("%hhu\n", icmp->type);
+    if(icmp->type != ICMP_V4_ECHO){
+        printf("Wrong ICMP type!\n");
+        return;
+    }
+
+    short icmp_len = length;
         
     icmp->type = ICMP_REPLY;
     icmp->csum = 0;
     icmp->csum = checksum(icmp, icmp_len, 0);
-
-    printf("%x\n", icmp->type);
-
-    return icmp;
 }
+

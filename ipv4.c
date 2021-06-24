@@ -34,26 +34,40 @@ void ip_ntohl(struct ip_hdr *hdr)
     hdr->id = ntohs(hdr->id);
 }
 
-struct ip_hdr* ip_send(struct ip_hdr* ihdr_in, struct icmp* icmp){
+char* ip_get_data(char* sk_buf, struct ip_hdr* ihdr){
+    
+    char* buf = malloc(ihdr->len);
+
+    memcpy(buf, sk_buf+(ihdr->ihl*4), ihdr->len);
+
+    return buf;
+
+}
+
+struct ip_hdr* ip_send(struct ip_hdr* ihdr_in){
       struct ip_hdr* ihdr = malloc(sizeof(struct ip_hdr));
 
       ihdr->version = IPV4;
       ihdr->ihl = 0x05;
       ihdr->tos = 0;
+      // fix len
       ihdr->len = ihdr_in->len;
       ihdr->frag_offset = 0x4000;
       ihdr->ttl = 64;
       ihdr->proto = ihdr_in->proto;
       ihdr->saddr = ihdr_in->daddr;
       ihdr->daddr = ihdr_in->saddr;
-      ihdr->csum = checksum(ihdr, ihdr->ihl * 4, 0);
+      ihdr->csum = 0;
 
+        
       ihdr->len = htons(ihdr->len);
       ihdr->id = htons(ihdr_in->id);
       ihdr->daddr = htonl(ihdr->daddr);
       ihdr->saddr = htonl(ihdr->saddr);
       ihdr->csum = htons(ihdr->csum);
       ihdr->frag_offset = htons(ihdr->frag_offset);
+      
+      ihdr->csum = checksum(ihdr, ihdr->ihl * 4, 0);
 
       return ihdr;
 }
@@ -65,17 +79,19 @@ uint16_t checksum(void *addr, int count, int start_sum){
         *         beginning at location "addr".
         * Taken from https://datatracker.ietf.org/doc/html/rfc1071#section-4.1
         */
-   register long sum = 0;
+   register uint32_t sum = start_sum;
+
+   uint16_t * ptr = addr;
 
     while( count > 1 )  {
        /*  This is the inner loop */
-           sum += * (unsigned short*) addr++;
+           sum += * ptr++;
            count -= 2;
    }
 
        /*  Add left-over byte, if any */
    if( count > 0 )
-           sum += *(unsigned char *) addr;
+           sum += *(uint8_t *) ptr;
 
        /*  Fold 32-bit sum to 16 bits */
    while (sum>>16)
