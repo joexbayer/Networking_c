@@ -26,7 +26,12 @@ static void tun_alloc()
 
     system("ifconfig tun12 inet 10.0.0.1 10.0.0.2 up");
 
-    printf("Tun has been configuered: inet 10.0.0.1 -> 10.0.0.2 \n");
+    printf("Tun has been configuered: inet 10.0.0.2 \n\n");
+
+    printf("Use: 'nc -u  10.0.0.2 8080' to communicate with UDP (NOT WORKING)\n");
+
+    printf("Use: 'ping 10.0.0.2' to communicate with ICMP\n");
+
 
     tun_fd = fd;
 }

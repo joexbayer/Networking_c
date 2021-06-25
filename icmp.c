@@ -24,6 +24,8 @@ char* icmp_handle(struct icmp* icmp, short length, char* buf){
     memcpy(icmp_respond_data, icmp, sizeof(struct icmp));
     memcpy(icmp_respond_data+sizeof(struct icmp), icmp_data, icmp_data_length);
 
+    printf("ICMP response sent!.\n");
+
     return icmp_respond_data;
 
 }  
@@ -40,6 +42,8 @@ char* icmp_parse(char* buf, short length){
         printf("Checksum failed (ICMP), returning NULL");
         return NULL;
     }
+
+    printf("ICMP request incomming.\n");
 
     return icmp_handle(icmp_hdr, length, buf);
 }

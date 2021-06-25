@@ -21,6 +21,7 @@ struct ip_hdr {
 
 #define IPV4 0x04
 #define ICMPV4 0x01
+#define UDP 0x11
 
 void print_ip(unsigned int ip);
 void print_ip_packet(struct ip_hdr* hdr);

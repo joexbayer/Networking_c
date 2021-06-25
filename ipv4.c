@@ -48,29 +48,40 @@ char* ip_handle(struct ip_hdr* hdr, char* buf){
 
     char* ip_data = ip_get_data(buf, hdr);
 
-    // define icmp_len
-    short icmp_len = hdr->len - (hdr->ihl * 4);
-    
-    // pass data to icmp, icmp_parse returns own packet data
-    char* icmp_data = icmp_parse(ip_data, icmp_len);
-    if(icmp_data == NULL){
+
+    if(hdr->proto == UDP){
+        printf("Protocol UDP implemented yet.\n");
         return NULL;
     }
 
-    //do better!!
-    struct ip_hdr* ip_reponse = ip_send(hdr);
+    if(hdr->proto == ICMPV4){
+            // define icmp_len
+        short icmp_len = hdr->len - (hdr->ihl * 4);
+        
+        // pass data to icmp, icmp_parse returns own packet data
+        char* icmp_data = icmp_parse(ip_data, icmp_len);
+        if(icmp_data == NULL){
+            return NULL;
+        }
 
-    // ip header length
-    int ip_header_length = hdr->ihl * 4;
+        //do better!!
+        struct ip_hdr* ip_reponse = ip_send(hdr);
 
-    // create reponse
-    char* reponse = malloc(hdr->len + ip_header_length);
-    memcpy(reponse, ip_reponse, ip_header_length);
-    memcpy(reponse+ip_header_length, icmp_data, hdr->len);
+        // ip header length
+        int ip_header_length = hdr->ihl * 4;
 
-    free(ip_reponse);
+        // create reponse
+        char* reponse = malloc(hdr->len + ip_header_length);
+        memcpy(reponse, ip_reponse, ip_header_length);
+        memcpy(reponse+ip_header_length, icmp_data, hdr->len);
 
-    return reponse;
+        free(ip_reponse);
+
+        return reponse;
+    }
+
+    printf("Protocol %d implemented yet.\n", hdr->proto); 
+    return NULL;
 }
 
 
