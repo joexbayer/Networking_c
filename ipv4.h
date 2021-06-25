@@ -3,6 +3,7 @@
 
 #include "syshead.h"
 #include "icmp.h"
+#include "skb.h"
 
 // IPv4 header
 struct ip_hdr {
@@ -26,10 +27,9 @@ struct ip_hdr {
 void print_ip(unsigned int ip);
 void print_ip_packet(struct ip_hdr* hdr);
 
-char* ip_parse(char* buf);
+char* ip_parse(struct sk_buff* skb);
 
 void ip_ntohl(struct ip_hdr *hdr);
-uint16_t checksum(void *addr, int count, int start_sum);
 
 struct ip_hdr* ip_send(struct ip_hdr* ihdr_in);
 

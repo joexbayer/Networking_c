@@ -1,10 +1,7 @@
-#include "syshead.h"
-#include "utils.h"
-#include "ipv4.h"
-#include "icmp.h"
+#include "tun.h"
+
 
 static int tun_fd;
-
 
 
 /*
@@ -13,7 +10,7 @@ static int tun_fd;
  * Recieves pings.
  * ping 10.0.0.2
  */
-static void tun_alloc()
+void tun_alloc()
 {
     int fd;
 
@@ -36,7 +33,7 @@ static void tun_alloc()
     tun_fd = fd;
 }
 
-char* tun_read(){
+uint8_t* tun_read(){
     // set FD sets
     fd_set readSockSet;
     FD_ZERO(&readSockSet);
@@ -45,7 +42,7 @@ char* tun_read(){
     // select for http_client
     int retval = select(FD_SETSIZE, &readSockSet, NULL, NULL, NULL);
     if(retval > 0){
-        char* buf = malloc(4000);
+        uint8_t* buf = malloc(4000);
         read(tun_fd, buf, 4000);
 
         printf("Incomming Tun packet! \n");
@@ -62,37 +59,4 @@ int tun_write(char* buf, int length){
 void free_tun()
 {
     close(tun_fd);
-}
-
-int main()
-{
-    tun_alloc();
-
-    while(1){
-
-        char* buf = tun_read();
-        if (buf == NULL){
-            printf("Error reading packet. Dropped.\n");
-            continue;
-        }
-
-        char* reponse = ip_parse(buf);
-        if(reponse == NULL){
-            printf("Error reading packet. Dropped.\n");
-            continue;
-        }
-
-        // bad -> 
-        struct ip_hdr* hdr = (struct ip_hdr * ) buf;
-        ip_ntohl(hdr);
-        // <- fix with sk_buff
-
-        int wc = tun_write(reponse, hdr->len + (hdr->ihl * 4));
-        if(wc == 0){
-            printf("Error sending packet.\n");
-        }
-        free(reponse);
-    }
-
-    return 0;
 }

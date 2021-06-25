@@ -12,17 +12,20 @@ char* icmp_get_data(char* buf, int total_size){
     return data;
 }
 
-char* icmp_handle(struct icmp* icmp, short length, char* buf){
-    char* icmp_data = icmp_get_data(buf, length);
+char* icmp_handle(struct sk_buff* skb){
 
-    icmp_write(icmp, length);
+    skb->data = skb->data + sizeof(struct icmp);
 
-    int icmp_data_length = length-sizeof(struct icmp);
+    skb->icmp->type = ICMP_REPLY;
+    skb->icmp->csum = 0;
+    skb->icmp->csum = checksum(skb->icmp, skb->len, 0);
 
-    char* icmp_respond_data = malloc(length);
+    int icmp_data_length = skb->len-sizeof(struct icmp);
 
-    memcpy(icmp_respond_data, icmp, sizeof(struct icmp));
-    memcpy(icmp_respond_data+sizeof(struct icmp), icmp_data, icmp_data_length);
+    char* icmp_respond_data = malloc(skb->len);
+
+    memcpy(icmp_respond_data, skb->icmp, sizeof(struct icmp));
+    memcpy(icmp_respond_data+sizeof(struct icmp), skb->data, icmp_data_length);
 
     printf("ICMP response sent!.\n");
 
@@ -30,14 +33,15 @@ char* icmp_handle(struct icmp* icmp, short length, char* buf){
 
 }  
 
-char* icmp_parse(char* buf, short length){
+char* icmp_parse(struct sk_buff* skb){
 
-    struct icmp* icmp_hdr = (struct icmp * ) buf;
+    struct icmp* icmp_hdr = (struct icmp * ) skb->data;
+    skb->icmp = icmp_hdr;
 
-    memcpy(icmp_hdr, buf, length);
+    //memcpy(icmp_hdr, buf, length);
     // calculate checksum, should be 0.
 
-    uint16_t csum_icmp = checksum(icmp_hdr, length, 0);
+    uint16_t csum_icmp = checksum(icmp_hdr, skb->len, 0);
     if( 0 != csum_icmp){
         printf("Checksum failed (ICMP), returning NULL");
         return NULL;
@@ -45,7 +49,7 @@ char* icmp_parse(char* buf, short length){
 
     printf("ICMP request incomming.\n");
 
-    return icmp_handle(icmp_hdr, length, buf);
+    return icmp_handle(skb);
 }
 
 void icmp_write(struct icmp* icmp, short length)
