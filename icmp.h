@@ -3,6 +3,7 @@
 
 #include "syshead.h"
 #include "ipv4.h"
+#include "skb.h"
 
 #define ICMP_REPLY 0x00
 #define ICMP_V4_ECHO 0x08
@@ -24,7 +25,7 @@ void icmp_write(struct icmp* icmp, short length);
 
 char* icmp_get_data(char* buf, int total_size);
 
-char* icmp_parse(char* buf, short length);
+char* icmp_parse(struct sk_buff* skb);
 
 
 #endif

@@ -34,62 +34,54 @@ void ip_ntohl(struct ip_hdr *hdr)
     hdr->id = ntohs(hdr->id);
 }
 
-char* ip_get_data(char* sk_buf, struct ip_hdr* ihdr){
-    
-    char* buf = malloc(ihdr->len);
+char* ip_handle(struct sk_buff* skb){
 
-    memcpy(buf, sk_buf+(ihdr->ihl*4), ihdr->len);
-
-    return buf;
-
-}
-
-char* ip_handle(struct ip_hdr* hdr, char* buf){
-
-    char* ip_data = ip_get_data(buf, hdr);
+    skb->data = skb->payload+(skb->hdr->ihl*4);
 
 
-    if(hdr->proto == UDP){
+    if(skb->hdr->proto == UDP){
         printf("Protocol UDP implemented yet.\n");
         return NULL;
     }
 
-    if(hdr->proto == ICMPV4){
+    if(skb->hdr->proto == ICMPV4){
             // define icmp_len
-        short icmp_len = hdr->len - (hdr->ihl * 4);
+        skb->len = skb->hdr->len - (skb->hdr->ihl * 4);
         
         // pass data to icmp, icmp_parse returns own packet data
-        char* icmp_data = icmp_parse(ip_data, icmp_len);
+        char* icmp_data = icmp_parse(skb);
         if(icmp_data == NULL){
             return NULL;
         }
 
         //do better!!
-        struct ip_hdr* ip_reponse = ip_send(hdr);
+        struct ip_hdr* ip_reponse = ip_send(skb->hdr);
 
         // ip header length
-        int ip_header_length = hdr->ihl * 4;
+        int ip_header_length = skb->hdr->ihl * 4;
 
         // create reponse
-        char* reponse = malloc(hdr->len + ip_header_length);
+        char* reponse = malloc(skb->hdr->len + ip_header_length);
         memcpy(reponse, ip_reponse, ip_header_length);
-        memcpy(reponse+ip_header_length, icmp_data, hdr->len);
+        memcpy(reponse+ip_header_length, icmp_data, skb->hdr->len);
 
         free(ip_reponse);
 
         return reponse;
     }
 
-    printf("Protocol %d implemented yet.\n", hdr->proto); 
+    printf("Protocol %d implemented yet.\n", skb->hdr->proto); 
     return NULL;
 }
 
 
 
-char* ip_parse(char* buf){
+char* ip_parse(struct sk_buff* skb){
 
+    skb->protocol = IPV4;
 
-    struct ip_hdr* hdr = (struct ip_hdr* ) buf;
+    struct ip_hdr* hdr = (struct ip_hdr* ) skb->payload;
+    skb->hdr = hdr;
 
     // calculate checksum, should be 0.
     uint16_t csum = checksum(hdr, hdr->ihl * 4, 0);
@@ -104,7 +96,7 @@ char* ip_parse(char* buf){
     printf("-------- Incomming -------\n");
     print_ip_packet(hdr);
 
-    return ip_handle(hdr, buf);
+    return ip_handle(skb);
 }
 
 struct ip_hdr* ip_send(struct ip_hdr* ihdr_in){
@@ -133,32 +125,4 @@ struct ip_hdr* ip_send(struct ip_hdr* ihdr_in){
       ihdr->csum = checksum(ihdr, ihdr->ihl * 4, 0);
 
       return ihdr;
-}
-
-
-// call with checksum(hdr, hdr->ihl * 4, 0);
-uint16_t checksum(void *addr, int count, int start_sum){
-       /* Compute Internet Checksum for "count" bytes
-        *         beginning at location "addr".
-        * Taken from https://datatracker.ietf.org/doc/html/rfc1071#section-4.1
-        */
-   register uint32_t sum = start_sum;
-
-   uint16_t * ptr = addr;
-
-    while( count > 1 )  {
-       /*  This is the inner loop */
-           sum += * ptr++;
-           count -= 2;
-   }
-
-       /*  Add left-over byte, if any */
-   if( count > 0 )
-           sum += *(uint8_t *) ptr;
-
-       /*  Fold 32-bit sum to 16 bits */
-   while (sum>>16)
-       sum = (sum & 0xffff) + (sum >> 16);
-
-   return ~sum;
 }
