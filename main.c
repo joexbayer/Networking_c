@@ -1,9 +1,9 @@
 #include "utils.h"
-#include "ipv4.h"
 #include "icmp.h"
 #include "syshead.h"
 #include "tun.h"
 #include "skb.h"
+#include "ether.h"
 
 
 int main()
@@ -14,7 +14,7 @@ int main()
 
         uint8_t* buf = tun_read();
         if (buf == NULL){
-            printf("Error reading packet. Dropped.\n");
+            //printf("Error reading packet. Dropped.\n");
             continue;
         }
 
@@ -22,13 +22,13 @@ int main()
         skb->payload = buf;
         skb->head = buf;
 
-        char* reponse = ip_parse(skb);
+        char* reponse = ether_parse(skb);
         if(reponse == NULL){
             printf("Error reading packet. Dropped.\n");
             continue;
         }
 
-        int wc = tun_write(reponse, skb->hdr->len + (skb->hdr->ihl * 4));
+        int wc = tun_write(reponse, skb->total_len);
         if(wc == 0){
             printf("Error sending packet.\n");
         }

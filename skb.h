@@ -9,6 +9,8 @@ struct sk_buff {
     uint16_t protocol;
     struct ip_hdr* hdr;
     struct icmp* icmp;
+    struct eth_hdr* e_hdr;
+    uint32_t total_len;
     uint32_t len;
     uint32_t dlen;
     uint8_t *end;

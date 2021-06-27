@@ -27,8 +27,13 @@ char* icmp_handle(struct sk_buff* skb){
     memcpy(icmp_respond_data, skb->icmp, sizeof(struct icmp));
     memcpy(icmp_respond_data+sizeof(struct icmp), skb->data, icmp_data_length);
 
-    printf("ICMP response sent!.\n");
+    unsigned char bytes[4];
+    bytes[3] = (skb->hdr->saddr >> 24) & 0xFF;
+    bytes[2] = (skb->hdr->saddr >> 16) & 0xFF;
+    bytes[1] = (skb->hdr->saddr >> 8) & 0xFF;
+    bytes[0] = skb->hdr->saddr & 0xFF;  
 
+    printf("ICMP (ping): %d bytes to %d.%d.%d.%d: icmp_seq= %d ttl=64 protocol: IPv4\n", skb->hdr->len - skb->hdr->ihl*4, bytes[3], bytes[2], bytes[1], bytes[0], skb->icmp->sequence/256);
     return icmp_respond_data;
 
 }  
@@ -40,14 +45,11 @@ char* icmp_parse(struct sk_buff* skb){
 
     //memcpy(icmp_hdr, buf, length);
     // calculate checksum, should be 0.
-
     uint16_t csum_icmp = checksum(icmp_hdr, skb->len, 0);
     if( 0 != csum_icmp){
         printf("Checksum failed (ICMP), returning NULL");
         return NULL;
     }
-
-    printf("ICMP request incomming.\n");
 
     return icmp_handle(skb);
 }

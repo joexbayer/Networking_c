@@ -14,20 +14,21 @@ void tun_alloc()
 {
     int fd;
 
-    if( (fd = open("/dev/tun12", O_RDWR)) < 0 ) {
+    if( (fd = open("/dev/tap12", O_RDWR)) < 0 ) {
         perror("Cannot open TUN/TAP dev\n");
         exit(1);
     }
 
     printf("Tun has been opened: /dev/tun12 (\n");
 
-    system("ifconfig tun12 inet 10.0.0.1 10.0.0.2 up");
+    system("ifconfig tap12 inet 10.0.0.1 10.0.0.255 up");
+    system("netstat -r");
 
-    printf("Tun has been configuered: inet 10.0.0.2 \n\n");
+    printf("Tun has been configuered: inet 10.0.0.255 \n\n");
 
     printf("Use: 'nc -u  10.0.0.2 8080' to communicate with UDP (NOT WORKING)\n");
 
-    printf("Use: 'ping 10.0.0.2' to communicate with ICMP\n");
+    printf("Use: 'ping 10.0.0.2' to communicate with ICMP\n\n");
 
 
     tun_fd = fd;
@@ -45,7 +46,6 @@ uint8_t* tun_read(){
         uint8_t* buf = malloc(4000);
         read(tun_fd, buf, 4000);
 
-        printf("Incomming Tun packet! \n");
 
         return buf;
     }

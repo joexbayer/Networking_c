@@ -12,7 +12,6 @@ char* ip_handle(struct sk_buff* skb){
 
     skb->data = skb->payload+(skb->hdr->ihl*4);
 
-
     if(skb->hdr->proto == UDP){
         printf("Protocol UDP implemented yet.\n");
         return NULL;
@@ -21,6 +20,7 @@ char* ip_handle(struct sk_buff* skb){
     if(skb->hdr->proto == ICMPV4){
             // define icmp_len
         skb->len = skb->hdr->len - (skb->hdr->ihl * 4);
+        skb->total_len = ETHER_HDR_LENGTH + skb->len + (skb->hdr->ihl * 4);
         
         // pass data to icmp, icmp_parse returns own packet data
         char* icmp_data = icmp_parse(skb);
@@ -66,9 +66,8 @@ char* ip_parse(struct sk_buff* skb){
 
     // convert ip from network byte order to host byter order.
     ip_ntohl(hdr);
-
-    printf("-------- Incomming -------\n");
-    print_ip_packet(hdr);
+    
+    //print_ip_packet(hdr);
 
     return ip_handle(skb);
 }
@@ -89,7 +88,7 @@ struct ip_hdr* ip_send(struct ip_hdr* ihdr_in){
       ihdr->csum = 0;
 
         
-      ihdr->len = htons(ihdr->len);
+      //ihdr->len = htons(ihdr->len);
       ihdr->id = htons(ihdr_in->id);
       ihdr->daddr = htonl(ihdr->daddr);
       ihdr->saddr = htonl(ihdr->saddr);
