@@ -13,3 +13,6 @@ Currently working:
 ![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/icmp_cli.png?raw=true)
 
 ![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/icmp_wireshark.png?raw=true)
+
+
+Inspired by: <a href="https://www.saminiir.com/lets-code-tcp-ip-stack-1-ethernet-arp/">Let's code a TCP/IP stack, 1: Ethernet & ARP</a>
