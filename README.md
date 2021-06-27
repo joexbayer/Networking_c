@@ -6,7 +6,7 @@ Currently working:
 
 <p>Parsing Ethernett Packets.</p>
 <p>Accepting and parsing IPv4 packets.</p>
-<p>Caculate IPv4 header checksum based on rfc1071.</p>
+<p>Caculate checksum based on rfc1071.</p>
 <p>Using a sk_buff.</p>
 <p>ICMP with ping!</p>
 
