@@ -18,4 +18,6 @@ Currently working:
 
 For TAP on MacOS: <a href="http://tuntaposx.sourceforge.net/">TunTap</a>
 
-Inspired by: <a href="https://github.com/torvalds/linux/tree/master/net">Linux Network Stack</a>
+Inspired by: 
+<a href="https://github.com/torvalds/linux/tree/master/net">Linux Network Stack</a> and 
+<a href="https://people.cs.clemson.edu/~westall/853/notes/netinit.pdf">Networking History</a>
