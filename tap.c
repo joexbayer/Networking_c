@@ -16,16 +16,11 @@ void tun_alloc()
         exit(1);
     }
 
-    printf("Tun has been opened: /dev/tun12 (\n");
+    printf("Tun has been opened: /dev/tun12\n\n");
 
     system("ifconfig tap12 inet 10.0.0.1 10.0.0.255 up");
 
-    printf("Tun has been configuered: broadcast 10.0.0.255 \n\n");
-
-    printf("Use: 'nc -u  10.0.0.255 8080' to communicate with UDP (NOT WORKING)\n");
-
-    printf("Use: 'ping 10.0.0.255' to communicate with ICMP\n\n");
-
+    printf("Ifconfig Configuration:\nDefault Gateway: 10.0.0.1\nNetmask: 255.255.255.0\nBroadcast 10.0.0.255\n\n");
 
     tun_fd = fd;
 }

@@ -1,9 +1,8 @@
 #include "utils.h"
-#include "icmp.h"
 #include "syshead.h"
 #include "tap.h"
-#include "skb.h"
 #include "ether.h"
+#include "netdevice.h"
 
 
 /* 
@@ -19,7 +18,6 @@ inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
 
 printf("%s\n", str); // prints "192.0.2.33"
 
-
 inet_addr() 
 */
 
@@ -27,6 +25,8 @@ inet_addr()
 int main()
 {
     tun_alloc();
+
+    struct net_device* netdev = netdev_init("10.0.0.3", "jo:e0:ba:ye:r0:25");
 
     while(1){
 
@@ -36,7 +36,7 @@ int main()
             continue;
         }
 
-        struct sk_buff* skb = alloc_skb();
+        struct sk_buff* skb = alloc_skb(netdev);
         skb->payload = buf;
         skb->head = buf;
 
@@ -52,6 +52,7 @@ int main()
         } else {
             free(reponse);
         }
+        free_skb(skb);
 
     }
 
