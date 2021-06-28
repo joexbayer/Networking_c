@@ -18,4 +18,4 @@ Currently working:
 
 For TAP on MacOS: <a href="http://tuntaposx.sourceforge.net/">TunTap</a>
 
-Inspired by: <a href="https://www.saminiir.com/lets-code-tcp-ip-stack-1-ethernet-arp/">Let's code a TCP/IP stack, 1: Ethernet & ARP</a>
+Inspired by: <a href="https://github.com/torvalds/linux/tree/master/net">Linux Network Stack</a>
