@@ -4,7 +4,6 @@
 
 char* icmp_get_data(char* buf, int total_size){
 
-
     char* data = malloc(total_size-sizeof(struct icmp));
 
     memcpy(data, buf+sizeof(struct icmp), total_size-sizeof(struct icmp));
@@ -33,7 +32,7 @@ char* icmp_handle(struct sk_buff* skb){
     bytes[1] = (skb->hdr->saddr >> 8) & 0xFF;
     bytes[0] = skb->hdr->saddr & 0xFF;  
 
-    printf("ICMP (ping): %d bytes to %d.%d.%d.%d: icmp_seq= %d ttl=64 protocol: IPv4\n", skb->hdr->len - skb->hdr->ihl*4, bytes[3], bytes[2], bytes[1], bytes[0], skb->icmp->sequence/256);
+    printf("ICMP : %d bytes to %d.%d.%d.%d: icmp_seq= %d ttl=64 protocol: IPv4\n", skb->hdr->len - skb->hdr->ihl*4, bytes[3], bytes[2], bytes[1], bytes[0], skb->icmp->sequence/256);
     return icmp_respond_data;
 
 }  
@@ -43,7 +42,6 @@ char* icmp_parse(struct sk_buff* skb){
     struct icmp* icmp_hdr = (struct icmp * ) skb->data;
     skb->icmp = icmp_hdr;
 
-    //memcpy(icmp_hdr, buf, length);
     // calculate checksum, should be 0.
     uint16_t csum_icmp = checksum(icmp_hdr, skb->len, 0);
     if( 0 != csum_icmp){

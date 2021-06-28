@@ -1,5 +1,5 @@
-#ifndef TUN
-#define TUN value
+#ifndef TAP_H
+#define TAP_H value
 
 #include "syshead.h"
 

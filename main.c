@@ -1,9 +1,27 @@
 #include "utils.h"
 #include "icmp.h"
 #include "syshead.h"
-#include "tun.h"
+#include "tap.h"
 #include "skb.h"
 #include "ether.h"
+
+
+/* 
+
+struct sockaddr_in sa;
+char str[INET_ADDRSTRLEN];
+
+// store this IP address in sa:
+inet_pton(AF_INET, "192.0.2.33", &(sa.sin_addr));
+
+// now get it back and print it
+inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
+
+printf("%s\n", str); // prints "192.0.2.33"
+
+
+inet_addr() 
+*/
 
 
 int main()

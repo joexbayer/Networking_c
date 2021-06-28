@@ -1,14 +1,11 @@
-#include "tun.h"
+#include "tap.h"
 
 
 static int tun_fd;
 
 
 /*
- * Open a FD from /dev/tun12
- * ifconfig it to use 10.0.0.2
- * Recieves pings.
- * ping 10.0.0.2
+ * Open a FD from /dev/tap12
  */
 void tun_alloc()
 {
@@ -23,11 +20,11 @@ void tun_alloc()
 
     system("ifconfig tap12 inet 10.0.0.1 10.0.0.255 up");
 
-    printf("Tun has been configuered: inet 10.0.0.255 \n\n");
+    printf("Tun has been configuered: broadcast 10.0.0.255 \n\n");
 
-    printf("Use: 'nc -u  10.0.0.2 8080' to communicate with UDP (NOT WORKING)\n");
+    printf("Use: 'nc -u  10.0.0.255 8080' to communicate with UDP (NOT WORKING)\n");
 
-    printf("Use: 'ping 10.0.0.2' to communicate with ICMP\n\n");
+    printf("Use: 'ping 10.0.0.255' to communicate with ICMP\n\n");
 
 
     tun_fd = fd;
