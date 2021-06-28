@@ -16,18 +16,10 @@ struct icmp {
     uint16_t sequence;
 } __attribute__((packed));
 
-struct icmp_echo {
-    uint16_t id;
-    uint16_t seq;
-    uint8_t data[];
-} __attribute__((packed));
-
-
 void icmp_write(struct icmp* icmp, short length);
 
 char* icmp_get_data(char* buf, int total_size);
 
 char* icmp_parse(struct sk_buff* skb);
-
 
 #endif

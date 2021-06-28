@@ -1,5 +1,5 @@
 #ifndef NETDEVICE_H
-#define NETDEVICE_H value
+#define NETDEVICE_H
 
 #include "syshead.h"
 #include "ipv4.h"
@@ -12,6 +12,6 @@ struct net_device
 };
 
 struct net_device* netdev_init(char* ip, char* mac);
-
+void free_netdev(struct net_device* netdev);
 
 #endif

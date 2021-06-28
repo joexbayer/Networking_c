@@ -1,7 +1,7 @@
 VFLAGS = --track-origins=yes --leak-check=full --show-leak-kinds=all
 CFLAGS = -std=gnu11 -g -Wall -Wextra
 
-C_FILES = $(find %.c)
+C_FILES = $(find *.c)
 
 all: compile run
 
@@ -10,8 +10,6 @@ compile: $(C_FILES)
 
 run: compile
 	rm -r ./build/server.dSYM && sudo ./build/server
-
-
 
 
 tunpy: tun.py

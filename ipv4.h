@@ -28,7 +28,7 @@ struct ip_hdr {
 void print_ip(unsigned int ip);
 void print_ip_packet(struct ip_hdr* hdr);
 
-char* ip_parse(struct sk_buff* skb);
+char* ip_parse(struct sk_buff * skb);
 
 void ip_ntohl(struct ip_hdr *hdr);
 

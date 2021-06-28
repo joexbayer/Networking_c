@@ -16,12 +16,12 @@ struct net_device* netdev_init(char* ip, char* mac){
                                                  &netdev->hmac[3],&netdev->hmac[4],&netdev->hmac[5]);
 
 	printf("Device Configuration:\nIP: %s\nMAC: %s\n\n", ip, mac);
-
 	printf("Use: 'nc -u  %s 8080' to communicate with UDP (NOT WORKING)\n", ip);
-
     printf("Use: 'ping %s' to communicate with ICMP\n\n", ip);
 
-
 	return netdev;
+}
 
+void free_netdev(struct net_device* netdev){
+	free(netdev);
 }

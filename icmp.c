@@ -1,6 +1,5 @@
 
 #include "icmp.h"
-#include "utils.h"
 
 char* icmp_get_data(char* buf, int total_size){
 

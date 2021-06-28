@@ -1,5 +1,5 @@
 #ifndef ETHER_H
-#define ETHER_H value
+#define ETHER_H
 
 
 #include "syshead.h"

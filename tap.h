@@ -3,12 +3,11 @@
 
 #include "syshead.h"
 
-void tun_alloc();
+void tap_alloc();
 
-uint8_t* tun_read();
-int tun_write(char* buf, int length);
+uint8_t* tap_read();
+int tap_write(char* buf, int length);
 
-void free_tun();
+void free_tap();
 
 #endif
-

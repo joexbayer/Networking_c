@@ -5,6 +5,9 @@
 #include "netdevice.h"
 
 
+struct sk_buff* skb_store;
+char* reponse_store;
+
 /* 
 
 struct sockaddr_in sa;
@@ -21,16 +24,37 @@ printf("%s\n", str); // prints "192.0.2.33"
 inet_addr() 
 */
 
+void intHandler() {
+    printf("\n\nShutting down:\n");
+    printf("Closing Tap: ");
+    free_tap();
+    printf("DONE\n");
+
+    printf("Closing Net device: ");
+    free_netdev(skb_store->netdev);
+    printf("DONE\n");
+
+    printf("Closing Socket Buffer: ");
+    free_skb(skb_store);
+    printf("DONE\n");
+    free(reponse_store);
+    printf("Shutdown Successful. Goodbye!\n");
+    exit(0);
+}
+
 
 int main()
 {
-    tun_alloc();
 
+    signal(SIGINT, intHandler);
+
+
+    tap_alloc();
     struct net_device* netdev = netdev_init("10.0.0.3", "jo:e0:ba:ye:r0:25");
 
     while(1){
 
-        uint8_t* buf = tun_read();
+        uint8_t* buf = tap_read();
         if (buf == NULL){
             //printf("Error reading packet. Dropped.\n");
             continue;
@@ -40,12 +64,15 @@ int main()
         skb->payload = buf;
         skb->head = buf;
 
+        skb_store = skb;
+
         char* reponse = ether_parse(skb);
         if(reponse == NULL){
             continue;
         }
+        reponse_store = reponse;
 
-        int wc = tun_write(reponse, skb->total_len);
+        int wc = tap_write(reponse, skb->total_len);
         if(wc == 0){
             printf("Error sending packet.\n");
             free(reponse);
