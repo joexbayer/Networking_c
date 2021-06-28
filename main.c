@@ -24,15 +24,17 @@ int main()
 
         char* reponse = ether_parse(skb);
         if(reponse == NULL){
-            printf("Error reading packet. Dropped.\n");
             continue;
         }
 
         int wc = tun_write(reponse, skb->total_len);
         if(wc == 0){
             printf("Error sending packet.\n");
+            free(reponse);
+        } else {
+            free(reponse);
         }
-        free(reponse);
+
     }
 
     return 0;

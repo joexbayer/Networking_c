@@ -13,7 +13,7 @@ char* ip_handle(struct sk_buff* skb){
     skb->data = skb->payload+(skb->hdr->ihl*4);
 
     if(skb->hdr->proto == UDP){
-        printf("Protocol UDP implemented yet.\n");
+        printf("Protocol UDP not implemented yet. Dropped.\n");
         return NULL;
     }
 
@@ -88,7 +88,7 @@ struct ip_hdr* ip_send(struct ip_hdr* ihdr_in){
       ihdr->csum = 0;
 
         
-      //ihdr->len = htons(ihdr->len);
+      ihdr->len = htons(ihdr->len);
       ihdr->id = htons(ihdr_in->id);
       ihdr->daddr = htonl(ihdr->daddr);
       ihdr->saddr = htonl(ihdr->saddr);

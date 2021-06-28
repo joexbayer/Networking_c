@@ -8,6 +8,11 @@
 
 #define ETHER_HDR_LENGTH 14
 
+#define IP 0x0800
+#define ARP 0x0806
+#define RARP 0x8035
+
+
 struct eth_hdr 
 {
     uint8_t  dmac[6];

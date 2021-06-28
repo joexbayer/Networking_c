@@ -22,7 +22,6 @@ void tun_alloc()
     printf("Tun has been opened: /dev/tun12 (\n");
 
     system("ifconfig tap12 inet 10.0.0.1 10.0.0.255 up");
-    system("netstat -r");
 
     printf("Tun has been configuered: inet 10.0.0.255 \n\n");
 
