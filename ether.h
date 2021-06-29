@@ -6,6 +6,7 @@
 #include "ipv4.h"
 #include "icmp.h"
 #include "skb.h"
+#include "arp.h"
 
 #define ETHER_HDR_LENGTH 14
 

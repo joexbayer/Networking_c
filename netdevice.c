@@ -5,7 +5,6 @@ uint8_t netdev_transmit_list_counter = 0;
 
 // abstraction for tap_write()
 int netdev_transmit(struct sk_buff* skb){
-
 	int wc = tap_write( (char*) skb->data, skb->total_len);
     if(wc == 0){
     	printf("Error sending packet.\n");
@@ -50,6 +49,7 @@ struct net_device* netdev_init(char* ip, char* mac){
 	// set netdevice mac address.
 	sscanf(mac, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &netdev->hmac[0],&netdev->hmac[1],&netdev->hmac[2],
                                                  &netdev->hmac[3],&netdev->hmac[4],&netdev->hmac[5]);
+
 
 	printf("Device Configuration:\nIP: %s\nMAC: %s\n\n", ip, mac);
 	printf("Use: 'nc -u  %s 8080' to communicate with UDP (NOT WORKING)\n", ip);

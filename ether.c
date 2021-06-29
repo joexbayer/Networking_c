@@ -1,5 +1,7 @@
 #include "ether.h"
 
+#include "tap.h"
+
 
 void print_ether(struct eth_hdr* hdr){
 	printf("eth ("                                       \
@@ -15,22 +17,34 @@ void ether_send(struct sk_buff* skb){
 
     skb->len = skb->len + ETHER_HDR_LENGTH;
 
-    char* reponse_ether = malloc(skb->len);
+    char* response_ether = malloc(skb->len);
 
     struct eth_hdr e_hdr;
-    e_hdr.ethertype = IP;
+    e_hdr.ethertype = skb->protocol;
 
-    // replace with arp
-    memcpy(e_hdr.dmac, skb->e_hdr->smac, 6);
+    // search arp for entry.
+    uint8_t* arp_search_result = malloc(6);
+    int arp_cache_hit = arp_search(skb->dip, arp_search_result);
+    if(arp_cache_hit < 0){
+    	free(skb->data);
+    	free(skb);
+    	return;
+    }
+
+    memcpy(e_hdr.dmac, arp_search_result, 6);
+    free(arp_search_result);
 
     memcpy(e_hdr.smac, skb->netdev->hmac, 6);
     e_hdr.ethertype = htons(e_hdr.ethertype);
 
-	memcpy(reponse_ether, &e_hdr, ETHER_HDR_LENGTH);
-    memcpy(reponse_ether+ETHER_HDR_LENGTH, skb->data, skb->len - ETHER_HDR_LENGTH);
+	memcpy(response_ether, &e_hdr, ETHER_HDR_LENGTH);
+    memcpy(response_ether+ETHER_HDR_LENGTH, skb->data, skb->len - ETHER_HDR_LENGTH);
 
     free(skb->data);
-    skb->data = (uint8_t *)reponse_ether;
+
+    skb->data = (uint8_t *)response_ether;
+
+    skb->total_len = skb->len;
 
     // check return
     int status = netdev_add_transmit_queue(skb);
@@ -53,9 +67,7 @@ void ether_parse(struct sk_buff* skb){
 			break;
 
 		case ARP:
-			printf("Protocol ARP not implemented yet. Dropped.\n");
-			free(skb);
-			free(skb->head);
+			arp_parse(skb);
 			return;
 
 		default:

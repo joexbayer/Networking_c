@@ -3,6 +3,9 @@
 #include "tap.h"
 #include "ether.h"
 #include "netdevice.h"
+#include "arp.h"
+
+struct net_device* netdev;
 
 void intHandler() {
     printf("\n\nShutting down:\n");
@@ -10,9 +13,18 @@ void intHandler() {
     free_tap();
     printf("DONE\n");
 
+    printf("Freeing ARP cache: ");
+    arp_free();
+    printf("DONE\n");
+
+    printf("Closing Netdev: ");
+    free_netdev(netdev);
+    printf("DONE\n");
+
+
+
     printf("Shutdown Successful. Goodbye!\n");
 
-    sleep(1);
     exit(0);
 }
 
@@ -27,7 +39,7 @@ int main()
 
     tap_alloc();
 
-    struct net_device* netdev = netdev_init("10.0.0.3", "jo:e0:ba:ye:r0:25");
+    netdev = netdev_init("10.0.0.3", "01:00:01:00:01:25");
 
     netdev_loop(netdev);
 

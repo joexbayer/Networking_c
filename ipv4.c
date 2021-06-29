@@ -83,6 +83,7 @@ void ip_send(struct sk_buff* skb){
 
     //doesnt work like this in real!
     ihdr.daddr = skb->hdr->saddr;
+    skb->dip = skb->hdr->saddr;
 
     // from host to network
     ip_htonl(&ihdr);
@@ -100,6 +101,8 @@ void ip_send(struct sk_buff* skb){
     free(skb->data);
     skb->data = (uint8_t *)reponse;
     skb->len = skb->len + ihdr.ihl * 4;
+
+    skb->protocol = IP;
 
     ether_send(skb);
 }
@@ -126,5 +129,5 @@ void print_ip(unsigned int ip)
     bytes[1] = (ip >> 16) & 0xFF;
     bytes[2] = (ip >> 8) & 0xFF;
     bytes[3] = ip & 0xFF;   
-    printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]);        
+    printf("%d.%d.%d.%d", bytes[3], bytes[2], bytes[1], bytes[0]);        
 }
