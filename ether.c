@@ -1,5 +1,6 @@
 #include "ether.h"
 
+
 void print_ether(struct eth_hdr* hdr){
 	printf("eth ("                                       \
                     "dmac: %.2hhx:%.2hhx:%.2hhx:%.2hhx:%.2hhx:%.2hhx, " \
@@ -10,7 +11,33 @@ void print_ether(struct eth_hdr* hdr){
                     hdr->smac[2], hdr->smac[3], hdr->smac[4], hdr->smac[5], hdr->ethertype);
 }
 
-char* ether_parse(struct sk_buff* skb){
+void ether_send(struct sk_buff* skb){
+
+    skb->len = skb->len + ETHER_HDR_LENGTH;
+
+    char* reponse_ether = malloc(skb->len);
+
+    // replace with arp
+    memcpy(skb->e_hdr->dmac, skb->e_hdr->smac, 6);
+
+    memcpy(skb->e_hdr->smac, skb->netdev->hmac, 6);
+    skb->e_hdr->ethertype = htons(skb->e_hdr->ethertype);
+
+
+	memcpy(reponse_ether, skb->e_hdr, ETHER_HDR_LENGTH);
+    memcpy(reponse_ether+ETHER_HDR_LENGTH, skb->data, skb->len - ETHER_HDR_LENGTH);
+
+    free(skb->data);
+    skb->data = (uint8_t *)reponse_ether;
+
+    // check return
+    int status = netdev_add_transmit_queue(skb);
+    if(status < 0){
+    	printf("Netdevice transmission buffer is full! Dropped.\n");
+    }
+}
+
+void ether_parse(struct sk_buff* skb){
 
 	// parse ethernet header and setup skb
 	struct eth_hdr* hdr = (struct eth_hdr * ) skb->payload;
@@ -18,42 +45,19 @@ char* ether_parse(struct sk_buff* skb){
 	skb->payload = skb->payload + ETHER_HDR_LENGTH;
 	skb->e_hdr->ethertype = ntohs(skb->e_hdr->ethertype);
 
-	char* reponse_3 = NULL;
 	switch(skb->e_hdr->ethertype){
 		case IP:
-			reponse_3 = ip_parse(skb);
-		    if(reponse_3 == NULL){
-		        return NULL;
-		    }
-
-		    //--> THIS SHOULD BE DONE THROUGH ARP IN IP
-		    struct eth_hdr* hdr_response = malloc(ETHER_HDR_LENGTH);
-
-		    char* reponse_ether = calloc(0, skb->total_len);
-
-		    memcpy(hdr_response->dmac, hdr->smac, 6);
-		    memcpy(hdr_response->smac, hdr->smac, 6);
-
-		    hdr_response->ethertype = hdr->ethertype;
-		    hdr_response->ethertype = htons(hdr_response->ethertype);
-
-		    // <----
-
-			memcpy(reponse_ether, hdr_response, ETHER_HDR_LENGTH);
-		    memcpy(reponse_ether+ETHER_HDR_LENGTH, reponse_3, skb->total_len - ETHER_HDR_LENGTH);
-
-		    free(reponse_3);
-		    free(hdr_response);
-		    return reponse_ether;
+			ip_parse(skb);
+			break;
 
 		case ARP:
 			printf("Protocol ARP not implemented yet. Dropped.\n");
-			return NULL;
+			return;
 
 		default:
 			printf("Unknown layer 3 protocol. Dropped.\n");
-			return NULL;
+			return;
 	}
 
-	return NULL;
+	return;
 }

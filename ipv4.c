@@ -1,5 +1,6 @@
 #include "ipv4.h"
 
+
 void ip_ntohl(struct ip_hdr *hdr)
 {
     hdr->saddr = ntohl(hdr->saddr);
@@ -8,13 +9,23 @@ void ip_ntohl(struct ip_hdr *hdr)
     hdr->id = ntohs(hdr->id);
 }
 
-char* ip_handle(struct sk_buff* skb){
+void ip_htonl(struct ip_hdr* ihdr){
+    ihdr->len = htons(ihdr->len);
+    ihdr->id = htons(ihdr->id);
+    ihdr->daddr = htonl(ihdr->daddr);
+    ihdr->saddr = ihdr->saddr;
+    ihdr->csum = htons(ihdr->csum);
+    ihdr->frag_offset = htons(ihdr->frag_offset);
+}
+
+
+void ip_handle(struct sk_buff* skb){
 
     skb->data = skb->payload+(skb->hdr->ihl*4);
 
     if(skb->hdr->proto == UDP){
         printf("Protocol UDP not implemented yet. Dropped.\n");
-        return NULL;
+        return;
     }
 
     if(skb->hdr->proto == ICMPV4){
@@ -23,34 +34,16 @@ char* ip_handle(struct sk_buff* skb){
         skb->total_len = ETHER_HDR_LENGTH + skb->len + (skb->hdr->ihl * 4);
         
         // pass data to icmp, icmp_parse returns own packet data
-        char* icmp_data = icmp_parse(skb);
-        if(icmp_data == NULL){
-            return NULL;
-        }
-
-        //do better!!
-        struct ip_hdr* ip_reponse = ip_send(skb->hdr);
-
-        // ip header length
-        int ip_header_length = skb->hdr->ihl * 4;
-
-        // create reponse
-        char* reponse = malloc(skb->hdr->len + ip_header_length);
-        memcpy(reponse, ip_reponse, ip_header_length);
-        memcpy(reponse+ip_header_length, icmp_data, skb->hdr->len);
-
-        free(ip_reponse);
-
-        return reponse;
+        icmp_parse(skb);
+        return;
     }
 
-    printf("Protocol %d implemented yet.\n", skb->hdr->proto); 
-    return NULL;
+    printf("Protocol %d implemented yet.\n", skb->hdr->proto);
 }
 
 
 
-char* ip_parse(struct sk_buff* skb){
+void ip_parse(struct sk_buff* skb){
 
     skb->protocol = IPV4;
 
@@ -61,43 +54,49 @@ char* ip_parse(struct sk_buff* skb){
     uint16_t csum = checksum(hdr, hdr->ihl * 4, 0);
     if( 0 != csum){
         printf("Checksum failed (IPv4), returning NULL\n");
-        return NULL;
+        return;
     }
 
     // convert ip from network byte order to host byter order.
     ip_ntohl(hdr);
-    
-    //print_ip_packet(hdr);
 
-    return ip_handle(skb);
+    ip_handle(skb);
 }
 
-struct ip_hdr* ip_send(struct ip_hdr* ihdr_in){
-      struct ip_hdr* ihdr = malloc(sizeof(struct ip_hdr));
+void ip_send(struct sk_buff* skb){
+    struct ip_hdr* ihdr = malloc(sizeof(struct ip_hdr));
+    // do I need to do this?
+    ihdr->version = IPV4;
+    ihdr->ihl = 0x05;
+    ihdr->tos = 0;
+    // fix len
+    ihdr->len = skb->hdr->len;
+    ihdr->frag_offset = 0x4000;
+    ihdr->ttl = 64;
+    ihdr->proto = skb->protocol;
+    // switch ip addresses
+    ihdr->saddr = skb->netdev->ipaddr;
+    ihdr->daddr = skb->hdr->saddr;
 
-      ihdr->version = IPV4;
-      ihdr->ihl = 0x05;
-      ihdr->tos = 0;
-      // fix len
-      ihdr->len = ihdr_in->len;
-      ihdr->frag_offset = 0x4000;
-      ihdr->ttl = 64;
-      ihdr->proto = ihdr_in->proto;
-      ihdr->saddr = ihdr_in->daddr;
-      ihdr->daddr = ihdr_in->saddr;
-      ihdr->csum = 0;
+    // from host to network
+    ip_htonl(ihdr);
 
-        
-      ihdr->len = htons(ihdr->len);
-      ihdr->id = htons(ihdr_in->id);
-      ihdr->daddr = htonl(ihdr->daddr);
-      ihdr->saddr = htonl(ihdr->saddr);
-      ihdr->csum = htons(ihdr->csum);
-      ihdr->frag_offset = htons(ihdr->frag_offset);
+    ihdr->csum = 0;
+    ihdr->csum = checksum(ihdr, ihdr->ihl * 4, 0);
 
-      ihdr->csum = checksum(ihdr, ihdr->ihl * 4, 0);
+    // ip header length
+    int ip_header_length = skb->hdr->ihl * 4;
+    // create reponse
+    char* reponse = malloc(skb->hdr->len + ip_header_length);
+    memcpy(reponse, ihdr, ip_header_length);
+    memcpy(reponse+ip_header_length, skb->data, skb->hdr->len);
 
-      return ihdr;
+    free(skb->data);
+    // free skb->data
+    skb->data = (uint8_t *)reponse;
+    skb->len = skb->len + ihdr->ihl * 4;
+
+    ether_send(skb);
 }
 
 // print out a ipv4 packet in a readable format.

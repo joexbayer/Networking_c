@@ -2,9 +2,6 @@
 #define SKB_H
 
 #include "syshead.h"
-#include "ipv4.h"
-#include "icmp.h"
-#include "netdevice.h"
 
 struct sk_buff {
     uint16_t protocol;
@@ -24,6 +21,10 @@ struct sk_buff {
     uint8_t *data;
     uint8_t *payload;
 };
+
+#include "ipv4.h"
+#include "icmp.h"
+#include "netdevice.h"
 
 struct sk_buff* alloc_skb(struct net_device* netdev);
 void free_skb(struct sk_buff* skb);

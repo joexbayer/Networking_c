@@ -18,8 +18,8 @@ struct icmp {
 
 void icmp_write(struct icmp* icmp, short length);
 
-char* icmp_get_data(char* buf, int total_size);
+void icmp_get_data(char* buf, int total_size);
 
-char* icmp_parse(struct sk_buff* skb);
+void icmp_parse(struct sk_buff* skb);
 
 #endif

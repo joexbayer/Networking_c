@@ -4,6 +4,7 @@
 
 #include "syshead.h"
 #include "ipv4.h"
+#include "icmp.h"
 #include "skb.h"
 
 #define ETHER_HDR_LENGTH 14
@@ -20,7 +21,9 @@ struct eth_hdr
     uint16_t ethertype;
 } __attribute__((packed));
 
-char* ether_parse(struct sk_buff* skb);
+void ether_parse(struct sk_buff* skb);
+
+void ether_send(struct sk_buff* skb);
 
 
 #endif

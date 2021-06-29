@@ -10,7 +10,6 @@ struct sk_buff* alloc_skb(struct net_device* netdev){
 }
 
 void free_skb(struct sk_buff* skb){
-
 	free(skb);
 }
 
