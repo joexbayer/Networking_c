@@ -35,7 +35,6 @@ void icmp_handle(struct sk_buff* skb){
     skb->protocol = ICMPV4;
 
     ip_send(skb);
-
 }  
 
 void icmp_parse(struct sk_buff* skb){
@@ -48,6 +47,7 @@ void icmp_parse(struct sk_buff* skb){
     uint16_t csum_icmp = checksum(icmp_hdr, skb->len, 0);
     if( 0 != csum_icmp){
         printf("Checksum failed (ICMP), returning NULL");
+        free(skb);
         return;
     }
 

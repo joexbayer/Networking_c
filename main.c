@@ -11,12 +11,16 @@ void intHandler() {
     printf("DONE\n");
 
     printf("Shutdown Successful. Goodbye!\n");
+
+    sleep(1);
     exit(0);
 }
 
 
 int main()
 {
+
+    printf("%d\n", getpid());
 
     // setup  --->
     signal(SIGINT, intHandler);

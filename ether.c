@@ -17,14 +17,16 @@ void ether_send(struct sk_buff* skb){
 
     char* reponse_ether = malloc(skb->len);
 
+    struct eth_hdr e_hdr;
+    e_hdr.ethertype = IP;
+
     // replace with arp
-    memcpy(skb->e_hdr->dmac, skb->e_hdr->smac, 6);
+    memcpy(e_hdr.dmac, skb->e_hdr->smac, 6);
 
-    memcpy(skb->e_hdr->smac, skb->netdev->hmac, 6);
-    skb->e_hdr->ethertype = htons(skb->e_hdr->ethertype);
+    memcpy(e_hdr.smac, skb->netdev->hmac, 6);
+    e_hdr.ethertype = htons(e_hdr.ethertype);
 
-
-	memcpy(reponse_ether, skb->e_hdr, ETHER_HDR_LENGTH);
+	memcpy(reponse_ether, &e_hdr, ETHER_HDR_LENGTH);
     memcpy(reponse_ether+ETHER_HDR_LENGTH, skb->data, skb->len - ETHER_HDR_LENGTH);
 
     free(skb->data);
@@ -52,10 +54,14 @@ void ether_parse(struct sk_buff* skb){
 
 		case ARP:
 			printf("Protocol ARP not implemented yet. Dropped.\n");
+			free(skb);
+			free(skb->head);
 			return;
 
 		default:
 			printf("Unknown layer 3 protocol. Dropped.\n");
+			free(skb);
+			free(skb->head);
 			return;
 	}
 
