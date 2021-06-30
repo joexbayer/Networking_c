@@ -61,20 +61,25 @@ void ether_parse(struct sk_buff* skb){
 	skb->payload = skb->payload + ETHER_HDR_LENGTH;
 	skb->e_hdr->ethertype = ntohs(skb->e_hdr->ethertype);
 
-	switch(skb->e_hdr->ethertype){
-		case IP:
-			ip_parse(skb);
-			break;
+	uint8_t broadcastmac = {255, 255, 255, 255, 255, 255};
+	if(memcmp(skb->e_hdr->dmac, skb->netdev->hmac, 6) || memcmp(skb->e_hdr->dmac, &broadcastmac, 6)){
 
-		case ARP:
-			arp_parse(skb);
-			return;
+		switch(skb->e_hdr->ethertype){
+			case IP:
+				ip_parse(skb);
+				break;
 
-		default:
-			printf("Unknown layer 3 protocol. Dropped.\n");
-			free(skb);
-			free(skb->head);
-			return;
+			case ARP:
+				arp_parse(skb);
+				return;
+
+			default:
+				printf("Unknown layer 3 protocol. Dropped.\n");
+				free(skb);
+				free(skb->head);
+				return;
+		}
+
 	}
 
 	return;

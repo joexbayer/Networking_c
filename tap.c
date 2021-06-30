@@ -20,7 +20,7 @@ void tap_alloc()
 
     system("ifconfig tap12 inet 10.0.0.1 10.0.0.255 up");
 
-    printf("tap has been opened: /dev/tap12\n\n");
+    printf("Tap has been opened: /dev/tap12\n\n");
     printf("Interface Configuration:\nDefault Gateway: 10.0.0.1\nNetmask: 255.255.255.0\nBroadcast 10.0.0.255\n\n");
 
     tap_fd = fd;

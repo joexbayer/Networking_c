@@ -24,9 +24,13 @@ void ip_handle(struct sk_buff* skb){
     skb->data = skb->payload+(skb->hdr->ihl*4);
 
     if(skb->hdr->proto == UDP){
-        printf("Protocol UDP not implemented yet. Dropped.\n");
+        //printf("Protocol UDP not implemented yet. Dropped.\n");
         free(skb);
         free(skb->head);
+        return;
+    }
+
+    if(ntohl(skb->hdr->daddr) != skb->netdev->ipaddr){
         return;
     }
 
@@ -64,6 +68,14 @@ void ip_parse(struct sk_buff* skb){
     ip_ntohl(hdr);
 
     ip_handle(skb);
+    return;
+
+    printf("IPv4: Route to ");
+    //print_ip(skb->hdr->daddr);
+    printf("%s (NOT IMPLEMENTED)\n");
+
+
+
 }
 
 void ip_send(struct sk_buff* skb){

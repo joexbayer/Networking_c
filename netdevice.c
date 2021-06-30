@@ -52,8 +52,11 @@ struct net_device* netdev_init(char* ip, char* mac){
 
 
 	printf("Device Configuration:\nIP: %s\nMAC: %s\n\n", ip, mac);
+	printf("NOTE: Only processed packets will be shown.\n");
 	printf("Use: 'nc -u  %s 8080' to communicate with UDP (NOT WORKING)\n", ip);
-    printf("Use: 'ping %s' to communicate with ICMP\n\n", ip);
+    printf("Use: 'ping %s' to communicate with ICMP\n", ip);
+    printf("Use: 'tcpdump -i tap12' to see all traffic over interface.\n\n");
+
 
 	return netdev;
 }
