@@ -29,9 +29,11 @@ void ip_handle(struct sk_buff* skb){
         free(skb->head);
         return;
     }
-
-    if(ntohl(skb->hdr->daddr) != skb->netdev->ipaddr){
-        return;
+    // only accept packets that contain correct IP address or broadcast
+    if(skb->netdev->broadcastaddr != ntohl(skb->hdr->daddr)){
+        if(ntohl(skb->hdr->daddr) != skb->netdev->ipaddr){
+            return;
+        }
     }
 
     if(skb->hdr->proto == ICMPV4){
@@ -72,7 +74,7 @@ void ip_parse(struct sk_buff* skb){
 
     printf("IPv4: Route to ");
     //print_ip(skb->hdr->daddr);
-    printf("%s (NOT IMPLEMENTED)\n");
+    printf("(NOT IMPLEMENTED)\n");
 
 
 

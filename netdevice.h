@@ -12,6 +12,7 @@ struct net_device
 {
 	char* name; // optional
 	uint32_t ipaddr;
+	uint32_t broadcastaddr;
 	uint8_t  hmac[6];
 };
 

@@ -46,6 +46,11 @@ struct net_device* netdev_init(char* ip, char* mac){
 	// set netdevice ip address.
 	netdev->ipaddr = sa.sin_addr.s_addr;
 
+	// fix this
+	struct sockaddr_in bsa;
+	inet_pton(AF_INET, "10.0.0.255", &(bsa.sin_addr));
+	netdev->broadcastaddr = bsa.sin_addr.s_addr;
+
 	// set netdevice mac address.
 	sscanf(mac, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &netdev->hmac[0],&netdev->hmac[1],&netdev->hmac[2],
                                                  &netdev->hmac[3],&netdev->hmac[4],&netdev->hmac[5]);
