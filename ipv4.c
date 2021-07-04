@@ -24,7 +24,9 @@ void ip_handle(struct sk_buff* skb){
     skb->data = skb->payload+(skb->hdr->ihl*4);
 
     if(skb->hdr->proto == UDP){
-        //printf("Protocol UDP not implemented yet. Dropped.\n");
+        
+        upd_parse(skb);
+
         free(skb);
         free(skb->head);
         return;

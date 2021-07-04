@@ -5,6 +5,7 @@
 #include "icmp.h"
 #include "skb.h"
 #include "ether.h"
+#include "udp.h"
 
 // IPv4 header
 struct ip_hdr {
