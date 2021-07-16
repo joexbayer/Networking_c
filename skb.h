@@ -10,6 +10,8 @@ struct sk_buff {
     struct icmp* icmp;
     struct eth_hdr* e_hdr;
     struct arp_hdr* a_hdr;
+    //bad design ->  FIX
+    struct udp_hdr* udp_hdr;
 
     struct net_device* netdev;
 

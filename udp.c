@@ -11,27 +11,31 @@ void udp_ntohs(struct udp_hdr* hdr){
 
 void udp_handle(struct sk_buff* skb){
 
-}
+	if(skb->udp_hdr->destport == 8080){
 
-void upd_parse(struct sk_buff* skb){
-
-	struct udp_hdr* hdr = (struct udp_hdr* ) skb->data;
-
-	skb->data = skb->data + sizeof(struct udp_hdr);
-
-	udp_ntohs(hdr);
-
-	if(hdr->destport == 8080){
-
-		int payloadsize = hdr->udp_length-sizeof(struct udp_hdr);
+		int payloadsize = skb->udp_hdr->udp_length-sizeof(struct udp_hdr);
 		char* payload = malloc(payloadsize);
 		memcpy(payload, skb->data, payloadsize);
 
 		// add null byte.
 		payload[payloadsize] = '\0';
 
-		printf("UDP Port: %d -> %s", hdr->destport, payload);
+		printf("UDP Port: %d -> %s", skb->udp_hdr->destport, payload);
 
 	}
+
+}
+
+void upd_parse(struct sk_buff* skb){
+
+	struct udp_hdr* hdr = (struct udp_hdr* ) skb->data;
+
+	skb->udp_hdr = hdr;
+
+	skb->data = skb->data + sizeof(struct udp_hdr);
+
+	udp_ntohs(hdr);
+
+	udp_handle(skb);
 
 }
