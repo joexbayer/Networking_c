@@ -9,6 +9,7 @@ void printBits(unsigned char num, int start, int bits)
    printf("\n");
 }
 
+
 // call with checksum(hdr, hdr->ihl * 4, 0);
 uint16_t checksum(void *addr, int count, int start_sum){
        /* Compute Internet Checksum for "count" bytes
@@ -34,5 +35,17 @@ uint16_t checksum(void *addr, int count, int start_sum){
        sum = (sum & 0xffff) + (sum >> 16);
 
    return ~sum;
+}
+
+uint16_t transport_checksum(uint32_t saddr, uint32_t daddr, uint8_t proto, uint8_t *data, uint16_t len)
+{
+    uint32_t sum = 0;
+
+    sum += htonl(saddr);
+    sum += htonl(daddr);
+    sum += htons(proto);
+    sum += len;
+    
+    return checksum(data, ntohs(len), sum);
 }
 

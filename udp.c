@@ -32,6 +32,12 @@ void upd_parse(struct sk_buff* skb){
 
 	skb->udp_hdr = hdr;
 
+	uint16_t udp_checksum = transport_checksum(skb->hdr->saddr, skb->hdr->daddr, UDP, skb->data, skb->udp_hdr->udp_length);
+
+	if( udp_checksum != 0){
+		printf("UDP checksum failed.\n");
+		return;
+	}
 	skb->data = skb->data + sizeof(struct udp_hdr);
 
 	udp_ntohs(hdr);
