@@ -2,6 +2,19 @@
 
 ## Using TAP as a network interface to read and write packets.
 
+### UDP
+![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/udp.png?raw=true)
+
+### ARP
+![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/arp.png?raw=true)
+
+![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/arp_table.png?raw=true)
+
+### ICMP
+![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/icmp_cli.png?raw=true)
+
+![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/icmp_wireshark.png?raw=true)
+
 Currently working:
 
 <p>Parsing Ethernett Packets.</p>
@@ -11,16 +24,7 @@ Currently working:
 <p>Configurable net device with IP and MAC.</p>
 <p>Parsing ICMP and responding ping.</p>
 <p>Printing UDP messages from netcat.</p>
-
-![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/icmp_cli.png?raw=true)
-
-![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/icmp_wireshark.png?raw=true)
-
 <p>Parsing ARP, sending ARP reply and saving ARP cache</p>
-
-![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/arp.png?raw=true)
-
-![alt text](https://github.com/joexbayer/Networking_c/blob/main/pictures/arp_table.png?raw=true)
 
 
 For TAP on MacOS: <a href="http://tuntaposx.sourceforge.net/">TunTap</a>
