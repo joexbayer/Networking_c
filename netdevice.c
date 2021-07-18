@@ -72,13 +72,15 @@ void netdev_loop(struct net_device* netdev){
 	while(1){
 
         uint8_t* buf = netdev_recv();
+        clock_t t;
+        t = clock();
 
         struct sk_buff* skb = alloc_skb(netdev);
         skb->payload = buf;
         skb->head = buf;
 
         ether_parse(skb);
-        
+
         for (int i = 0; i < netdev_transmit_list_counter; ++i)
         {
         	int wc = netdev_transmit(netdev_transmit_list[i]);
@@ -89,6 +91,11 @@ void netdev_loop(struct net_device* netdev){
         	free(netdev_transmit_list[i]->data);
         }
         netdev_transmit_list_counter = 0;
+
+        t = clock() - t;
+   		double time_taken = ((double)t)/CLOCKS_PER_SEC;
+   		printf("Request took %f ms to complete)\n", time_taken*1000);
+        
     }
 }
 
